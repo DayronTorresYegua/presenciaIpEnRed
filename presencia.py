@@ -33,7 +33,10 @@ def nombreSistemaOperativo():
     nombreSistema = os.uname().sysname, os.uname().version
     return nombreSistema
 
+# 3. Comprobar si la ip esta activa en la red:
+
 def main():
+    # 1. Validación de Datos de Entrada:
     if len(sys.argv) != 2:
         print("La ip no debe contener espacios en sus octetos")
         sys.exit(1)
@@ -45,9 +48,12 @@ def main():
         print(f"La dirección IP {direccionIp} es de clase {clase}.")
     else:
         print("La dirección IP ingresada no es válida, debe contener 4 octetos con numeros comprendidos entre 0 y 255.")
-
+   
+    # 2. Implementación de la Funcionalidad:
     sistemaOperativo = nombreSistemaOperativo()
     print(f"El sistema operativo es: {sistemaOperativo}")
 
+    # 3. Comprobar si la ip esta activa en la red:
+    
 if __name__ == "__main__":
     main()
