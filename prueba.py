@@ -34,11 +34,12 @@ def nombreSistemaOperativo():
     nombreSistema = os.uname().sysname, os.uname().version
     return nombreSistema
 
-# 3. Comprobar si la ip está activa en la red:
+# 3. Comprobar si la IP está activa en la red:
 
-def comprobarIpActiva(ip, puerto=80, timeout=2):
+def verificarIpConSocket(ip, puerto=80, timeout=3):
     """
-    Comprueba si una IP está activa en la red intentando conectarse al puerto especificado.
+    Verifica si una IP está activa utilizando el módulo socket.
+    Intenta conectarse al puerto especificado.
     """
     try:
         with socket.create_connection((ip, puerto), timeout):
@@ -65,9 +66,10 @@ def main():
     sistemaOperativo = nombreSistemaOperativo()
     print(f"El sistema operativo es: {sistemaOperativo}")
 
-    # 3. Comprobar si la IP está activa en la red:
-    puerto = 80  # Puerto HTTP por defecto
-    if comprobarIpActiva(direccionIp, puerto):
+    # Verificar si la IP está activa
+    puerto = 80  # Puerto común para pruebas HTTP
+    print(f"Comprobando si la dirección IP {direccionIp} está activa en el puerto {puerto}...")
+    if verificarIpConSocket(direccionIp, puerto):
         print(f"La dirección IP {direccionIp} está activa en el puerto {puerto}.")
     else:
         print(f"La dirección IP {direccionIp} no está activa o no responde en el puerto {puerto}.")
