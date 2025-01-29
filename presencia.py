@@ -1,6 +1,6 @@
-import os
 import sys
-import socket
+import subprocess
+import platform
 
 # 1. Validación de Datos de Entrada:
 
@@ -31,19 +31,34 @@ def determinarClase(ip):
 # 2. Implementación de la Funcionalidad:
 
 def nombreSistemaOperativo():
-    nombreSistema = os.uname().sysname, os.uname().version
-    return nombreSistema
-
-# 3. Comprobar si la ip está activa en la red:
-
-def comprobarIpActiva(ip, puerto=80, timeout=2):
     """
-    Comprueba si una IP está activa en la red intentando conectarse al puerto especificado.
+    Obtiene el nombre y la versión del sistema operativo.
+    """
+    sistema = platform.system()  # Ejemplo: "Windows", "Linux", "Darwin" (macOS)
+    version = platform.version()  # Versión del sistema operativo
+    return sistema, version
+
+# 3. Comprobar si la IP está activa en la red usando ping:
+
+def verificarIpConPing(ip, timeout=3):
+    """
+    Verifica si una IP está activa utilizando el comando ping.
+    Compatible con Windows y Unix/Linux/macOS.
     """
     try:
-        with socket.create_connection((ip, puerto), timeout):
-            return True
-    except (socket.timeout, socket.error):
+        # Comando ping según el sistema operativo
+        if platform.system().lower() == "windows":
+            comando = ['ping', '-n', '1', '-w', str(timeout * 1000), ip]  # Windows usa -n y -w (en milisegundos)
+        else:
+            comando = ['ping', '-c', '1', '-W', str(timeout), ip]  # Unix/Linux/macOS usa -c y -W
+
+        # Ejecuta el comando ping
+        output = subprocess.run(comando, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # Si el comando ping fue exitoso, la IP está activa
+        return output.returncode == 0
+    except Exception as e:
+        print(f"Error al ejecutar ping: {e}")
         return False
 
 def main():
@@ -65,12 +80,12 @@ def main():
     sistemaOperativo = nombreSistemaOperativo()
     print(f"El sistema operativo es: {sistemaOperativo}")
 
-    # 3. Comprobar si la IP está activa en la red:
-    puerto = 80  # Puerto HTTP por defecto
-    if comprobarIpActiva(direccionIp, puerto):
-        print(f"La dirección IP {direccionIp} está activa en el puerto {puerto}.")
+    # Verificar si la IP está activa usando ping
+    print(f"Comprobando si la dirección IP {direccionIp} está activa...")
+    if verificarIpConPing(direccionIp):
+        print(f"La dirección IP {direccionIp} está activa.")
     else:
-        print(f"La dirección IP {direccionIp} no está activa o no responde en el puerto {puerto}.")
+        print(f"La dirección IP {direccionIp} no está activa o no responde.")
 
 if __name__ == "__main__":
     main()
